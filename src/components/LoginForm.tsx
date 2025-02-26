@@ -12,8 +12,10 @@ export default function LoginForm({ loginAction }: { loginAction: LoginAction })
     startTransition(async () => {
       try {
         await loginAction(formData);
-      } catch (err) {
-        setError('Login failed: Invalid credentials');
+      } catch (err: any) {
+        if (err.message !== 'NEXT_REDIRECT') { // Ignore redirect "error"
+          setError(err.message || 'An error occurred');
+        }
       }
     });
   };

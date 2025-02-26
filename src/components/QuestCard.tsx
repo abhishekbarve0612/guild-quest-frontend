@@ -12,13 +12,22 @@ type Quest = {
   reward_coins: number;
 };
 
-export default function QuestCard({ quests, token }: { quests: Quest[]; token: string }) {
+export default function QuestCard({ quests, token, refresh }: { quests: Quest[]; token: string; refresh: string; }) {
   const [isPending, startTransition] = useTransition();
 
   const handleComplete = (id: number) => {
     startTransition(async () => {
-      await apiFetchAuth(`/quests/quests/${id}/complete/`, token, { method: 'POST' });
-      window.location.reload(); // Refresh for now (use client state later)
+        try {
+            const res = await apiFetchAuth(`/quests/quests/${id}/complete/`, token, refresh, { method: 'POST' });
+            if (res.newTokens) {
+                console.log("QuestCard: New tokens received, reloading");
+              // Client-side can't update httpOnly cookies directly—rely on server updates or refresh page
+              window.location.reload();
+            }
+        } catch (err: any) {
+                console.log("QuestCard error:", err.message);
+                if (err.message === 'Unauthorized') window.location.href = '/login';
+        }
     });
   };
 

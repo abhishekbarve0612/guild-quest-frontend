@@ -6,8 +6,8 @@ type Task = {
   is_completed: boolean;
 };
 
-export default async function TaskList({ token }: { token: string }) {
-  const tasks: Task[] = await apiFetchAuth('/tasks/tasks/', token);
+export default async function TaskList({ token, refresh }: { token: string; refresh: string; }) {
+  const tasks: Task[] = await apiFetchAuth('/tasks/tasks/', token, refresh);
 
   return (
     <div className="p-4 bg-white rounded-lg shadow">
